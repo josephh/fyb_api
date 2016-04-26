@@ -1,0 +1,240 @@
+FORMAT: 1A
+
+# fyb
+Fyb (fisherman's year book) API is a *content retrieve and store* service managing the copy and assets of fishing journal entries.
+
+In all API endpoint definitions below, including an optional 'page' parameter is intended to allow for limiting the number of results returned by actions on the resource in question. 
+In all API endpoints definitions, dates and times respect **ISO8601**.
+## Data Structures
+
+### Entry
++ type: `entry` (string, required)
++ id: `1923673` (number, required)
++ attributes (required)
+    + entryDateTime: `2016-04-26T08:46:27Z` (string, required)
+    + owner: `982` (number, required)
+    + context_date_time: `2016-04-26T08:46:27Z` (string, required)
+    + created-at: `2016-04-26T08:46:27Z` (string, required)
+    + position (optional)
+        + id: `1` (number, required)
+        + lat: `51.0583557` (number)
+        + long: `-1.7907422` (number)
+    + location (optional)
+        + id: `1` (number, required)
+        + country: `UK` (string, required)
+        + waterBody: `sea`, `stillwater`, `river` (string, required)
+        + name: `Durnford Beat 12` (string, required)
+    + conditions: `sunny`, `rainy`, `overcast`, `windy` (string, optional)
+    + tackle (string, optional)
+    + notes (string, optional)
+    + images (array, optional)
+    + species: `unknown`, `pike`, `chub`, `roach`, `barbel`, `carp`, `trout` (string, required)
+    + length: `23` (number, optional)
+    + lengthUnit: `cm`, `inches` (string, optional)
+      + Default: `cm`
+    + weight: `32` (number, optional)
+    + weightUnit: `ounces`, `grams` (string, optional)
+      + Default: `ounces`
+    + images (array, optional)
+
+# Group Authentication and Authorisation
+
+## User login [/api/login{?provider}]
+            
+### Login [GET]
+
+The Login endpoint returns an access token (a JWT?) in the response body, to be used by clients for subsequent requests to secure api endpoints.
+
++ Request (application/json)
+
++ Parameters
+    + provider:`google` (string, required) - The authentication provider that has issued the authorization code, 'google', 'facebook' or 'twitter'.
+        + Members
+            + `google`
+            + `facebook`
+            + `twitter`
+    
++ Response 200 (application/json)
+    
+            {
+                "token": {
+                    {
+                      "alg": "HS256",
+                      "typ": "JWT"
+                    },
+                    {
+                      "csrfToken": "8723khjsdlf...",
+                      "email": "john.doe@gmail.com",
+                      "givenName": "john",
+                      "handle": "rod-john"
+                    },
+                    {
+                        "digsig": "_kjshd823j1...."
+                    }
+                }
+            }  
+        
++ Response 400
+            
++ Response 500
+
+# Group User Entries and Timeline
+
+## Entries Collection [/api/{ownerId}/entries{?offset,page}]
+            
+### Get User Entries [GET]
+
++ Request (application/json)
+
+   + Headers
+   
+            Authorization: Bearer <token>
+
++ Parameters
+    + ownerId: `928` (number, required) - The id of the owner of the timeline (which may or may not match the authenticated user). 
+    + offset: `5` (number, optional) - The desired number of entries.
+        + Default: `10`
+    + page: `1` (number, optional) - The starting page of records, based on the offset.
+        + Default: `1`
+    
++ Response 200 (application/json)
+    
+    + Attributes 
+        + data (array[Entry])
+        + links
+            + self: `http://www.fyb.com/api/928/entries?offset=2&page=10`
+            + first: `http://www.fyb.com/api/928/entries?offset=1&page=10`
+            + prev: `http://www.fyb.com/api/928/entries?offset=1&page=10`
+            + next: `http://www.fyb.com/api/928/entries?offset=3&page=10`
+            + last: `http://www.fyb.com/api/928/entries?offset=10&page=10`
+    
++ Response 401
+
++ Response 404
+            
++ Response 500
+
+
+## Entries Collection [/api/entries]
+
+### List Global Entries [GET]
+
+An anonymous view of multiple entries. This is a `Global` list since it is not specific to a single user and allows filtering
+based on a combination of the following criteria: species, location, year.
+
+| Field              | Type       | As request         | As response       | Description                                 |
+| :----------------- | :--------- | :------------------| :---------------- | ------------------------------------------- |
+| species            | string     | One of species     | `Returned always` | The species of fish. One of the reference types defined in the SPECIES rference list. Wildcard returns all. |
+| location           | string     | Name of water body | `Returned always` | The name of the body of water the fish was caught on - river, lake, sea, ocean |
+| year               | integer    | 4 digit date       | `Returned always` | The year to constrain the list of entries from. Wildcard returns all. |
+
++ Request (application/json)
+    + Body
+
+            {
+               "species": "*",
+               "location": "*",
+               "year": "*"
+            }
+
++ Response 200 (application/json)
+
+    + Attributes 
+        + data (array[Entry])
+        + links
+
+
+### Create a new Entry [POST]
+
++ Request (application/json)
+
+    + Headers
+       
+            Authorization: Bearer <token>
+
++ Attributes (Entry)
+    
++ Response 201 (application/json)
+
+    + Headers
+
+            Location: /entries/1432
+
+    + Body
+
+            {
+                Entry
+            }
+
++ Response 400
+
++ Response 401
+
++ Response 500
+
+
+## Entry [/api/entries/{id}]
+
+
+### View an Entry's Details [GET]
+
+An anonymous view of the details of a single entry.
+
++ Request (application/json)
+
++ Parameters
+    + id (number) - ID of the Entry in the form of an integer
+
++ Response 200 (application/json)
+    
+    + Attributes 
+        + data (array[Entry])
+        + links
+            + self: `http://www.fyb.com/api/1002`
+            + prev: `http://www.fyb.com/api/1001`
+            + next: `http://www.fyb.com/api/1003`
+    
++ Response 401
+
++ Response 404
+            
++ Response 500
+
+
+### Delete an Entry [DELETE]
+
++ Request (application/json)
+
+       + Headers
+       
+            Authorization: Bearer <token>
+
++ Parameters
+    + id: `3562` (number, required) - The id of the entry to delete.
+    
++ Response 204
+
++ Response 401
+
++ Response 500
+    
+### Update an existing Entry [PUT]
+
++ Request (application/json)
+
+       + Headers
+       
+            Authorization: Bearer <token>
+
++ Parameters
+    + id: `3562` (number, required) - The id of the entry to delete.
+    
++ Response 204
+
++ Response 401
+
++ Response 500
+
++ Response 200 (application/json)
+    
+        {}
