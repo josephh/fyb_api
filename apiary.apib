@@ -14,7 +14,7 @@ In all API endpoints definitions, dates and times respect **ISO8601**.
     + entryDateTime: `2016-04-26T08:46:27Z` (string, required)
     + owner: `982` (number, required)
     + context_date_time: `2016-04-26T08:46:27Z` (string, required)
-    + created-at: `2016-04-26T08:46:27Z` (string, required)
+    + created_at: `2016-04-26T08:46:27Z` (string, required)
     + position (optional)
         + id: `1` (number, required)
         + lat: `51.0583557` (number)
@@ -25,9 +25,9 @@ In all API endpoints definitions, dates and times respect **ISO8601**.
         + waterBody: `sea`, `stillwater`, `river` (string, required)
         + name: `Durnford Beat 12` (string, required)
     + conditions: `sunny`, `rainy`, `overcast`, `windy` (string, optional)
-    + tackle (string, optional)
-    + notes (string, optional)
-    + images (array, optional)
+    + tackle: `klinkhammer, 3 weight 8 foot rod` (string, optional)
+    + notes: `big hatch of flies` (string, optional)
+    + images: (array, optional)
     + species: `unknown`, `pike`, `chub`, `roach`, `barbel`, `carp`, `trout` (string, required)
     + length: `23` (number, optional)
     + lengthUnit: `cm`, `inches` (string, optional)
@@ -35,7 +35,6 @@ In all API endpoints definitions, dates and times respect **ISO8601**.
     + weight: `32` (number, optional)
     + weightUnit: `ounces`, `grams` (string, optional)
       + Default: `ounces`
-    + images (array, optional)
 
 # Group Authentication and Authorisation
 
