@@ -16,11 +16,11 @@ In all API endpoints definitions, dates and times respect **ISO8601**.
     + location (optional)
         + id: `1` (string, required)
         + country: `UK` (string, required)
-        + waterbody: `sea`, `stillwater`, `river` (string, required)
+        + water: `sea`, `stillwater`, `river` (string, required)
         + name: `Durnford Beat 12` (string, required)
-        + geoposition (optional)
-            + lat: `51.0583557` (number)
-            + long: `-1.7907422` (number)
+        + position (optional)
+            + latitude: `51.0583557` (number, required)
+            + longitude: `-1.7907422` (number, required)
     + conditions: `sunny`, `rainy`, `overcast`, `windy` (string, optional)
     + tackle: `3 weight 8 foot rod` (string, optional)
     + bait: `klinkhammer` (string, optional)
@@ -92,10 +92,10 @@ The Login endpoint returns an access token (a JWT?) in the response body, to be 
 
 + Parameters
     + ownerId: `928` (number, required) - The id of the owner of the timeline (which may or may not match the authenticated user). 
-    + offset: `5` (number, optional) - The desired number of entries.
-        + Default: `10`
-    + page: `1` (number, optional) - The starting page of records, based on the offset.
-        + Default: `1`
+    + offset: `5` (number, optional) - The starting point of the first record in the results.
+        + Default: `0`
+    + numRecords: `10` (number, optional) - The number of records to return.
+        + Default: `50`
     
 + Response 200 (application/json)
     
