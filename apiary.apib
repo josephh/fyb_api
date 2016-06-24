@@ -105,11 +105,11 @@ The Login endpoint returns an access token (a JWT?) in the response body, to be 
     + Attributes 
         + data (array[Entry, Entry, Entry])
         + links
-            + self: `http://www.fyb.com/api/928/entries?page=3&page=10`
-            + first: `http://www.fyb.com/api/928/entries?page=1&page=10`
-            + prev: `http://www.fyb.com/api/928/entries?offset=2&page=10`
-            + next: `http://www.fyb.com/api/928/entries?offset=4&page=10`
-            + last: `http://www.fyb.com/api/928/entries?offset=10&page=10`
+            + self: `http://www.fyb.com/api/928/entries?page=3&numRecords=10`
+            + first: `http://www.fyb.com/api/928/entries?page=1&numRecords=10`
+            + prev: `http://www.fyb.com/api/928/entries?page=2&numRecords=10`
+            + next: `http://www.fyb.com/api/928/entries?page=4&numRecords=10`
+            + last: `http://www.fyb.com/api/928/entries?page=10&numRecords=10`
     
 + Response 401
 
@@ -118,7 +118,7 @@ The Login endpoint returns an access token (a JWT?) in the response body, to be 
 + Response 500
 
 
-## Entries Collection [/api/entries{?species,location,offset,numRecords}]
+## Entries Collection [/api/entries{?species,location,page,numRecords}]
 
 ### List Global Entries [GET]
 
@@ -131,10 +131,10 @@ based on: species and free-text location.
         + Default: `*`
     + location: `shad thames` (string, optional) - Freetext name of catch location. Defaults to an empty string.
         + Default: ``
-    + offset: `5` (number, optional) - The desired number of entries.
+    + page: `5` (number, optional).
         + Default: `10`
-    + numRecords: `1` (number, optional) - The starting page of records, based on the offset.
-        + Default: `1`
+    + numRecords: `10` (number, optional).
+        + Default: `50`
 
 + Response 200 (application/json)
 
