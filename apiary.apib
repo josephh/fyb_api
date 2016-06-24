@@ -1,7 +1,7 @@
 FORMAT: 1A
 
 # fyb
-Fyb (fisherman's year book) API is a *content retrieve and store* service managing the copy and assets of fishing journal entries.
+Fyb (fishing year book) API is a *content retrieve and store* service managing the copy and assets of fishing journal entries.
 
 In all API endpoint definitions below, including an optional 'page' parameter is intended to allow for limiting the number of results returned by actions on the resource in question. 
 In all API endpoints definitions, dates and times respect **ISO8601**.
@@ -80,7 +80,7 @@ The Login endpoint returns an access token (a JWT?) in the response body, to be 
 
 # Group User Entries and Timeline
 
-## Entries Collection [/api/{ownerId}/entries{?offset,page}]
+## Entries Collection [/entries/user/{ownerId}{?page,numRecords}]
             
 ### Get User Entries [GET]
 
@@ -92,9 +92,12 @@ The Login endpoint returns an access token (a JWT?) in the response body, to be 
 
 + Parameters
     + ownerId: `928` (number, required) - The id of the owner of the timeline (which may or may not match the authenticated user). 
-    + offset: `5` (number, optional) - The starting point of the first record in the results.
-        + Default: `0`
-    + numRecords: `10` (number, optional) - The number of records to return.
+    + page: `5` (number, optional) - The page (or index) of a chunk of data.  This is used in conjunction with a _numRecords_ value.  
+    For example, if there are 10,000 records and the request specifies {page=10,numRecords=100} then we would expect the response to 
+    contain 100 records starting in the resultset at position 1000.
+        + Default: `1`
+    + numRecords: `10` (number, optional) - The number of records to return.  This parameter should be used in conjunction with the 
+    _page_ field as described above.
         + Default: `50`
     
 + Response 200 (application/json)
@@ -115,7 +118,7 @@ The Login endpoint returns an access token (a JWT?) in the response body, to be 
 + Response 500
 
 
-## Entries Collection [/api/entries{?species,location,offset,page}]
+## Entries Collection [/api/entries{?species,location,offset,numRecords}]
 
 ### List Global Entries [GET]
 
@@ -130,7 +133,7 @@ based on: species and free-text location.
         + Default: ``
     + offset: `5` (number, optional) - The desired number of entries.
         + Default: `10`
-    + page: `1` (number, optional) - The starting page of records, based on the offset.
+    + numRecords: `1` (number, optional) - The starting page of records, based on the offset.
         + Default: `1`
 
 + Response 200 (application/json)
