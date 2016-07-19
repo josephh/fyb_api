@@ -83,7 +83,7 @@ The Login endpoint returns an access token (a JWT?) in the response body, to be 
 
 # Group User Entries and Timeline
 
-## Entries Collection [/{ownerId}/entries{?page,numRecords}]
+## Owned Entries Collection [/{ownerId}/entries{?page,numRecords}]
             
 ### Get User Entries [GET]
 
@@ -121,9 +121,9 @@ The Login endpoint returns an access token (a JWT?) in the response body, to be 
 + Response 500
 
 
-## Entries Collection [/entries{?species,country,place,page,numRecords}]
+## All Entries Collection [/entries{?species,country,place,page,numRecords}]
 
-### List Global Entries [GET]
+### List Global Entries (optional filtering) [GET]
 
 An anonymous view of multiple entries. This is a `Global` list since it is not specific to a single user and allows filtering
 based on: species, country and a place tag.
@@ -176,7 +176,7 @@ based on: species, country and a place tag.
 + Response 500
 
 
-## Entry [/api/entries/{id}]
+## Entry [/entries/{id}]
 
 
 ### View an Entry's Details [GET]
