@@ -27,6 +27,8 @@ In all API endpoints definitions, dates and times respect **ISO8601**.
     + bait: `klinkhammer` (string, optional)
     + notes: `big hatch of flies` (string, optional)
     + images (array, optional)
+      + https://some/image/location/123.jpg, 
+      + https://some/image/location/321.gif
     + species: `unknown`, `pike`, `chub`, `roach`, `barbel`, `carp`, `trout` (string, required)
     + length: `23` (number, optional)
     + lengthunit: `inches`, `cm` (string, optional)
@@ -81,7 +83,7 @@ The Login endpoint returns an access token (a JWT?) in the response body, to be 
 
 # Group User Entries and Timeline
 
-## Entries Collection [/entries/user/{ownerId}{?page,numRecords}]
+## Entries Collection [/{ownerId}/entries{?page,numRecords}]
             
 ### Get User Entries [GET]
 
@@ -119,18 +121,20 @@ The Login endpoint returns an access token (a JWT?) in the response body, to be 
 + Response 500
 
 
-## Entries Collection [/api/entries{?species,location,page,numRecords}]
+## Entries Collection [/entries{?species,country,place,page,numRecords}]
 
 ### List Global Entries [GET]
 
 An anonymous view of multiple entries. This is a `Global` list since it is not specific to a single user and allows filtering
-based on: species and free-text location.
+based on: species, country and a place tag.
 
 + Request (application/json)
 + Parameters
-    + species: `carp` (string, optional) - One of the reference types defined in the SPECIES reference list. Defaults to all. 
+    + species: `carp` (string, optional) - One of the reference types defined in the SPECIES reference list. Defaults to all. Acts as a filter.
         + Default: `*`
-    + location: `shad thames` (string, optional) - Freetext name of catch location. Defaults to an empty string.
+    + place: `shad thames,shepperton,thames` (string, optional) - Zero or more of place tags, comma-separated. Default is an empty string.  Acts as a filter.
+        + Default: ``
+    + country: `GB` (string, optional) - Country. Default is an empty string.  Acts as a filter.
         + Default: ``
     + page: `5` (number, optional).
         + Default: `10`
@@ -226,7 +230,7 @@ An anonymous view of the details of a single entry.
             Authorization: Bearer <token>
 
 + Parameters
-    + id: `3562` (number, required) - The id of the entry to delete.
+    + id: `3562` (number, required) - The id of the entry to update.
     
 + Response 204
 
@@ -235,5 +239,11 @@ An anonymous view of the details of a single entry.
 + Response 500
 
 + Response 200 (application/json)
-    
-        {}
+
+# Group Actions 
+
+## Image Upload [/entries/{entryId}/upload-image]
+
+### Upload an Image [POST]
+
+End point to receive file uploads, one file at a time.
