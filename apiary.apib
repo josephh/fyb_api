@@ -247,3 +247,154 @@ An anonymous view of the details of a single entry.
 ### Upload an Image [POST]
 
 End point to receive file uploads, one file at a time.
+
+
+
+# Group Fish
+
+The Fish reference data is a read-only set of resources for providing Fish names. 
+The set of Fish is taken (as a point of reference) from the list of world records maintained 
+by the [IGFA](http://wrec.igfa.org/WRecSearchList.aspx?lc=AllTackle). Given that some species 
+will have a variety of names in different parts of the world, the names used will also adhere 
+to those used by the IGFA.
+
+The API provides several resources for retrieving sub-sets of fish, generally split into `freshwater` 
+and `saltwater` species. Note that some fish will appear in both as they can be found in both fresh 
+and salt water eg. the Bullshark.
+
+**Families of fish**
+
+Since many fish belong to a particular family, the superset can be further split based on these families 
+eg. the API also provides resources for retrieving particular families. eg. given a general family name 
+like `carp`, the list of children can be retrieved eg. `Common Carp, Leather Carp, Mirror Carp` etc.
+
+## GET fish [/fish]
+
+Returns the complete set of fish as a lexicographically sorted list of all Fish (both Fresh water and Salt water togethor).
+
+**Resource Information**
+
+The JSON response contains an entry for each Fish in the following format:
+
+`{ "id":"sharkblue", "name":"Shark - Blue" }`
+
+|---|---|
+|---|---|
+| Response formats | JSON |
+| Requires authentication? | No |
+
+### GET fish [GET]
+
++ Request (application/vnd.api+json)
+    + Body
+
+            {}
+
++ Response 200 (application/vnd.api+json)
+
+        {
+            "url": "/fish",
+            "fish": [
+                { "id":"carp", "name":"Carp" },
+                { "id":"carpcom", "name":"Shark - Common" },
+                { "id":"carpmir", "name":"Carp - Mirror" },
+                { "id":"dace", "name":"Dace" },
+                { "id":"pike", "name":"Pike" },
+                { "id":"shark", "name":"Shark" },
+                { "id":"sharkblue", "name":"Shark - Blue" },
+                { "id":"sharklem", "name":"Shark - Lemon" }
+            ]
+        }
+        
+
+## GET fish/freshwater [/fish/freshwater]
+
+Returns the set of fresh water fish as a lexicographically sorted list.
+
+ 
+### GET fish/freshwater [GET]
+
++ Request (application/vnd.api+json)
+    + Body
+
+            {}
+
++ Response 200 (application/vnd.api+json)
+
+        {
+            "url": "/fish/freshwater",
+            "fish": [
+                { "id":"carp", "name":"Carp" },
+                { "id":"carpcom", "name":"Shark - Common" },
+                { "id":"carpmir", "name":"Carp - Mirror" },
+                { "id":"dace", "name":"Dace" },
+                { "id":"pike", "name":"Pike" }
+            ]
+        }
+
+## GET fish/saltwater [/fish/saltwater]
+
+Returns the set of salt water fish as a lexicographically sorted list.
+
+ 
+### GET fish/saltwater [GET]
+
++ Request (application/vnd.api+json)
+    + Body
+
+            {}
+
++ Response 200 (application/vnd.api+json)
+
+        {
+            "url": "/fish/saltwater",
+            "fish": [
+                { "id":"shark", "name":"Shark" },
+                { "id":"sharkblue", "name":"Shark - Blue" },
+                { "id":"sharklem", "name":"Shark - Lemon" }
+            ]
+        }
+
+## GET fish/freshwater/{species} [/fish/freshwater/{species}]
+
+Returns the family of fresh water fish as a lexicographically sorted list.
+
+ 
+### GET fish/freshwater/carp [GET]
+
++ Request (application/vnd.api+json)
+    + Body
+
+            {}
+
++ Response 200 (application/vnd.api+json)
+
+        {
+            "url": "/fish/freshwater/{species}",
+            "fish": [
+                { "id":"carpcom", "name":"Shark - Common" },
+                { "id":"carpmir", "name":"Carp - Mirror" }
+            ]
+        }
+
+## GET fish/saltwater/{species} [/fish/saltwater/{species}]
+
+Returns the family of fresh water fish as a lexicographically sorted list.
+
+ 
+### GET fish/saltwater/shark [GET]
+
++ Request (application/vnd.api+json)
+    + Body
+
+            {}
+
++ Response 200 (application/vnd.api+json)
+
+        {
+            "url": "/fish/saltwater/{species}",
+            "fish": [
+                { "id":"sharkblue", "name":"Shark - Blue" },
+                { "id":"sharklem", "name":"Shark - Lemon" }
+            ]
+        }
