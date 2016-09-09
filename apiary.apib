@@ -129,17 +129,19 @@ An anonymous view of multiple entries. This is a `Global` list since it is not s
 based on: species, country and a place tag.
 
 + Request (application/json)
-+ Parameters
-    + species: `carp` (string, optional) - One of the reference types defined in the SPECIES reference list. Defaults to all. Acts as a filter.
-        + Default: `*`
-    + place: `shad thames,shepperton,thames` (string, optional) - Zero or more of place tags, comma-separated. Default is an empty string.  Acts as a filter.
-        + Default: ``
-    + country: `GB` (string, optional) - Country. Default is an empty string.  Acts as a filter.
-        + Default: ``
-    + page: `5` (number, optional).
-        + Default: `10`
-    + numRecords: `10` (number, optional).
-        + Default: `50`
+
+    + Parameters
+    
+        + species: `carp` (string, optional) - One of the reference types defined in the SPECIES reference list. Defaults to all. Acts as a filter.
+            + Default: `*`
+        + place: `shad thames,shepperton,thames` (string, optional) - Zero or more of place tags, comma-separated. Default is an empty string.  Acts as a filter.
+            + Default: ``
+        + country: `GB` (string, optional) - Country. Default is an empty string.  Acts as a filter.
+            + Default: ``
+        + page: `5` (number, optional).
+            + Default: `10`
+        + numRecords: `10` (number, optional).
+            + Default: `50`
 
 + Response 200 (application/json)
 
@@ -247,6 +249,12 @@ An anonymous view of the details of a single entry.
 ### Upload an Image [POST]
 
 End point to receive file uploads, one file at a time.
+
++ Response 201 (application/vnd.api+json)
+
+        {
+            "url": "/images/{catchId}/{image-filename}"
+        }
 
 
 
