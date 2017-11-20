@@ -1,0 +1,413 @@
+FORMAT: 1A
+
+# fyb
+Fyb (fishing year book) API is a *content retrieve and store* service managing the copy and assets of fishing journal entries.
+
+In all API endpoint definitions below, including an optional 'page' parameter is intended to allow for limiting the number of results returned by actions on the resource in question. 
+In all API endpoints definitions, dates and times respect **ISO8601**.
+## Data Structures
+
+### Entry
++ id: `1923673` (string, required)
++ type: `entry` (string, required)
++ attributes (required)
+    + caught: `2016-04-26T08:46:27Z` (string, required)
+    + created: `2016-04-26T08:46:27Z` (string, required)
+    + location (optional)
+        + id: `1` (string, required)
+        + country: `UK` (string, required)
+        + water: `sea`, `stillwater`, `river` (string, required)
+        + name: `Durnford Beat 12` (string, required)
+        + position (optional)
+            + latitude: `51.0583557` (number, required)
+            + longitude: `-1.7907422` (number, required)
+        + formattedAddress: `112 Britford Ln Salisbury, Wiltshire SP2 8AH` (string, optional)
+    + conditions: `sunny`, `rainy`, `overcast`, `windy` (string, optional)
+    + tackle: `3 weight 8 foot rod` (string, optional)
+    + bait: `klinkhammer` (string, optional)
+    + notes: `big hatch of flies` (string, optional)
+    + images (array, optional)
+      + https://some/image/location/123.jpg, 
+      + https://some/image/location/321.gif
+    + species: `unknown`, `pike`, `chub`, `roach`, `barbel`, `carp`, `trout` (string, required)
+    + length: `23` (number, optional)
+    + lengthunit: `inches`, `cm` (string, optional)
+      + Default: `cm`
+    + weight: `32` (number, optional)
+    + weightunit: `grams`, `ounces` (string, optional)
+      + Default: `ounces`
+    + user (required)
+        + id: `101` (string, required)
+        + name: `jermaine jackson` (string, required)
+      
+# Group Authentication and Authorisation
+
+## User login [/api/login{?provider}]
+            
+### Login [GET]
+
+The Login endpoint returns an access token (a JWT?) in the response body, to be used by clients for subsequent requests to secure api endpoints.
+
++ Request (application/json)
+
++ Parameters
+    + provider:`google` (string, required) - The authentication provider that has issued the authorization code, 'google', 'facebook' or 'twitter'.
+        + Members
+            + `google`
+            + `facebook`
+            + `twitter`
+    
++ Response 200 (application/json)
+    
+            {
+                "token": {
+                    {
+                      "alg": "HS256",
+                      "typ": "JWT"
+                    },
+                    {
+                      "csrfToken": "8723khjsdlf...",
+                      "email": "john.doe@gmail.com",
+                      "givenName": "john",
+                      "handle": "rod-john"
+                    },
+                    {
+                        "digsig": "_kjshd823j1...."
+                    }
+                }
+            }  
+        
++ Response 400
+            
++ Response 500
+
+# Group User Entries and Timeline
+
+## Owned Entries Collection [/{ownerId}/entries{?page,numRecords}]
+            
+### Get User Entries [GET]
+
++ Request (application/json)
+
+   + Headers
+   
+            Authorization: Bearer <token>
+
++ Parameters
+    + ownerId: `928` (number, required) - The id of the owner of the timeline (which may or may not match the authenticated user). 
+    + page: `5` (number, optional) - The page (or index) of a chunk of data.  This is used in conjunction with a _numRecords_ value.  
+    For example, if the full dataset that matches the request includes 10,000 records and the request specifies _page=10,numRecords=100_ then we would expect the response to 
+    contain 100 records starting in the resultset at position 1000.
+        + Default: `1`
+    + numRecords: `10` (number, optional) - The number of records to return.  This parameter should be used in conjunction with the 
+    _page_ field as described above.
+        + Default: `50`
+    
++ Response 200 (application/json)
+    
+    + Attributes 
+        + data (array[Entry, Entry, Entry])
+        + links
+            + self: `http://www.fyb.com/api/928/entries?page=3&numRecords=10`
+            + first: `http://www.fyb.com/api/928/entries?page=1&numRecords=10`
+            + prev: `http://www.fyb.com/api/928/entries?page=2&numRecords=10`
+            + next: `http://www.fyb.com/api/928/entries?page=4&numRecords=10`
+            + last: `http://www.fyb.com/api/928/entries?page=10&numRecords=10`
+    
++ Response 401
+
++ Response 404
+            
++ Response 500
+
+
+## All Entries Collection [/entries{?species,country,place,page,numRecords}]
+
+### List Global Entries (optional filtering) [GET]
+
+An anonymous view of multiple entries. This is a `Global` list since it is not specific to a single user and allows filtering
+based on: species, country and a place tag.
+
++ Request (application/json)
+
+    + Parameters
+    
+        + species: `carp` (string, optional) - One of the reference types defined in the SPECIES reference list. Defaults to all. Acts as a filter.
+            + Default: `*`
+        + place: `shad thames,shepperton,thames` (string, optional) - Zero or more of place tags, comma-separated. Default is an empty string.  Acts as a filter.
+            + Default: ``
+        + country: `GB` (string, optional) - Country. Default is an empty string.  Acts as a filter.
+            + Default: ``
+        + page: `5` (number, optional).
+            + Default: `10`
+        + numRecords: `10` (number, optional).
+            + Default: `50`
+
++ Response 200 (application/json)
+
+    + Attributes 
+        + data (array[Entry])
+        + links
+
+### Create a new Entry [POST]
+
++ Request (application/json)
+
+    + Headers
+       
+            Authorization: Bearer <token>
+
++ Attributes (Entry)
+    
++ Response 201 (application/json)
+
+    + Headers
+
+            Location: /entries/1432
+
+    + Body
+
+            {
+                Entry
+            }
+
++ Response 400
+
++ Response 401
+
++ Response 500
+
+
+## Entry [/entries/{id}]
+
+
+### View an Entry's Details [GET]
+
+An anonymous view of the details of a single entry.
+
++ Request (application/json)
+
++ Parameters
+    + id (number) - ID of the Entry in the form of an integer
+
++ Response 200 (application/json)
+    
+    + Attributes 
+        + data (array[Entry])
+        + links
+            + self: `http://www.fyb.com/api/1002`
+            + prev: `http://www.fyb.com/api/1001`
+            + next: `http://www.fyb.com/api/1003`
+    
++ Response 401
+
++ Response 404
+            
++ Response 500
+
+
+### Delete an Entry [DELETE]
+
++ Request (application/json)
+
+       + Headers
+       
+            Authorization: Bearer <token>
+
++ Parameters
+    + id: `3562` (number, required) - The id of the entry to delete.
+    
++ Response 204
+
++ Response 401
+
++ Response 500
+    
+### Update an existing Entry [PUT]
+
++ Request (application/json)
+
+       + Headers
+       
+            Authorization: Bearer <token>
+
++ Parameters
+    + id: `3562` (number, required) - The id of the entry to update.
+    
++ Response 204
+
++ Response 401
+
++ Response 500
+
++ Response 200 (application/json)
+
+
+
+# Group Actions 
+
+
+## Image Upload [/entries/{entryId}/upload-image]
+
+### Upload an Image [POST]
+
+End point to receive file uploads, one file at a time.
+
++ Response 201 (application/vnd.api+json)
+
+        {
+            "url": "/images/{catchId}/{image-filename}"
+        }
+
+
+
+# Group Fish
+
+The Fish reference data is a read-only set of resources for providing Fish names. 
+The set of Fish is taken (as a point of reference) from the list of world records maintained 
+by the [IGFA](http://wrec.igfa.org/WRecSearchList.aspx?lc=AllTackle). Given that some species 
+will have a variety of names in different parts of the world, the names used will also adhere 
+to those used by the IGFA.
+
+The API provides several resources for retrieving sub-sets of fish, generally split into `freshwater` 
+and `saltwater` species. Note that some fish will appear in both as they can be found in both fresh 
+and salt water eg. the Bullshark.
+
+**Families of fish**
+
+Since many fish belong to a particular family, the superset can be further split based on these families 
+eg. the API also provides resources for retrieving particular families. eg. given a general family name 
+like `carp`, the list of children can be retrieved eg. `Common Carp, Leather Carp, Mirror Carp` etc.
+
+## GET fish [/fish]
+
+Returns the complete set of fish as a lexicographically sorted list of all Fish (both Fresh water and Salt water togethor).
+
+**Resource Information**
+
+The JSON response contains an entry for each Fish in the following format:
+
+`{ "id":"sharkblue", "name":"Shark - Blue" }`
+
+|---|---|
+|---|---|
+| Response formats | JSON |
+| Requires authentication? | No |
+
+### GET fish [GET]
+
++ Request (application/vnd.api+json)
+    + Body
+
+            {}
+
++ Response 200 (application/vnd.api+json)
+
+        {
+            "url": "/fish",
+            "fish": [
+                { "id":"carp", "name":"Carp" },
+                { "id":"carpcom", "name":"Shark - Common" },
+                { "id":"carpmir", "name":"Carp - Mirror" },
+                { "id":"dace", "name":"Dace" },
+                { "id":"pike", "name":"Pike" },
+                { "id":"shark", "name":"Shark" },
+                { "id":"sharkblue", "name":"Shark - Blue" },
+                { "id":"sharklem", "name":"Shark - Lemon" }
+            ]
+        }
+        
+
+## GET fish/freshwater [/fish/freshwater]
+
+Returns the subset of fresh water fish as a lexicographically sorted list.
+
+ 
+### GET fish/freshwater [GET]
+
++ Request (application/vnd.api+json)
+    + Body
+
+            {}
+
++ Response 200 (application/vnd.api+json)
+
+        {
+            "url": "/fish/freshwater",
+            "fish": [
+                { "id":"carp", "name":"Carp" },
+                { "id":"carpcom", "name":"Shark - Common" },
+                { "id":"carpmir", "name":"Carp - Mirror" },
+                { "id":"dace", "name":"Dace" },
+                { "id":"pike", "name":"Pike" }
+            ]
+        }
+
+## GET fish/saltwater [/fish/saltwater]
+
+Returns the subset of salt water fish as a lexicographically sorted list.
+
+ 
+### GET fish/saltwater [GET]
+
++ Request (application/vnd.api+json)
+    + Body
+
+            {}
+
++ Response 200 (application/vnd.api+json)
+
+        {
+            "url": "/fish/saltwater",
+            "fish": [
+                { "id":"shark", "name":"Shark" },
+                { "id":"sharkblue", "name":"Shark - Blue" },
+                { "id":"sharklem", "name":"Shark - Lemon" }
+            ]
+        }
+
+## GET fish/freshwater/{species} [/fish/freshwater/{species}]
+
+Returns the family of fresh water fish as a lexicographically sorted list.
+
+ 
+### GET fish/freshwater/carp [GET]
+
++ Request (application/vnd.api+json)
+    + Body
+
+            {}
+
++ Response 200 (application/vnd.api+json)
+
+        {
+            "url": "/fish/freshwater/{species}",
+            "fish": [
+                { "id":"carpcom", "name":"Carp - Common" },
+                { "id":"carplea", "name":"Carp - Leather" },
+                { "id":"carpmir", "name":"Carp - Mirror" }
+            ]
+        }
+
+## GET fish/saltwater/{species} [/fish/saltwater/{species}]
+
+Returns the family of fresh water fish as a lexicographically sorted list.
+
+ 
+### GET fish/saltwater/shark [GET]
+
++ Request (application/vnd.api+json)
+    + Body
+
+            {}
+
++ Response 200 (application/vnd.api+json)
+
+        {
+            "url": "/fish/saltwater/{species}",
+            "fish": [
+                { "id":"sharkblue", "name":"Shark - Blue" },
+                { "id":"sharkbull", "name":"Shark - Bull" },
+                { "id":"sharklem", "name":"Shark - Lemon" }
+            ]
+        }
